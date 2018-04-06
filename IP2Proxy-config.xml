@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<IP2Proxy_Configuration xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Settings>
+    <BIN_File>bin\your_database_file.BIN</BIN_File>
+    <Custom_IP_Server_Variable>HTTP_X_FORWARDED_FOR</Custom_IP_Server_Variable>
+  </Settings>
+</IP2Proxy_Configuration>
