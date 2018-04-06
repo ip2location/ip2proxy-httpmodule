@@ -8,10 +8,10 @@ This IIS managed module allows user to query an IP address if it was being used 
 
 ## Requirements
 
-Visual Studio 2010 or later.
-Microsoft .NET 3.5 framework.
-[IntX](https://www.nuget.org/packages/IntX/)
-[Microsoft ILMerge](https://www.microsoft.com/en-my/download/details.aspx?id=17630)
+* Visual Studio 2010 or later.
+* Microsoft .NET 3.5 framework.
+* [IntX](https://www.nuget.org/packages/IntX/)
+* [Microsoft ILMerge](https://www.microsoft.com/en-my/download/details.aspx?id=17630)
 
 Supported Microsoft IIS Versions: 7.0, 7.5, 8.0, 8.5 (website needs to be running under a .NET 2.0 application pool in integrated mode)
 
@@ -20,7 +20,7 @@ Supported Microsoft IIS Versions: 7.0, 7.5, 8.0, 8.5 (website needs to be runnin
 
 Just open the solution file in Visual Studio and compile. Or just use the IP2ProxyHTTPModule.dll in the dll folder.
 
-NOTE: After compilation, the final IP2ProxyHTTPModule.dll will be in the merged folder as the post-build event will merge the IntXLib.dll with the original IP2ProxyHTTPModule.dll to make it easier for deployment.
+**NOTE: After compilation, the final IP2ProxyHTTPModule.dll will be in the merged folder as the post-build event will merge the IntXLib.dll with the original IP2ProxyHTTPModule.dll to make it easier for deployment.**
 
 ___
 
@@ -29,7 +29,7 @@ ___
 **NOTE: You can choose to install the IP2Proxy HTTP Module in either per website mode or per server mode.**
 
 If you install in per website mode, you will need to install and configure for every website that you wish to add the IP2Proxy feature.
-While in the per server mode, you just need to install and configure once and all websites hosted on that machine will be able to use IP2Proxy.
+If you install in per server mode, you just need to install and configure once and all websites hosted on that machine will be able to use IP2Proxy.
 
 ### Installation & Configuration (per website mode)
 
@@ -67,9 +67,9 @@ While in the per server mode, you just need to install and configure once and al
 2. Copy the IP2ProxyHTTPModule.dll, IP2Proxy-config.xml and the BIN data file to that folder.
 
 3. Create a Windows environment system variable to store the path of the new folder.
-   a. Open the Control Panel then double-click on System then click on Advanced System Settings.
-   b. Click on the Environment Variables button to open up the Environment Variable settings.
-   c. Under System variables, create a new variable called IP2ProxyHTTPModuleConfig and set the value to the full path of the new folder.
+   1. Open the Control Panel then double-click on System then click on Advanced System Settings.
+   2. Click on the Environment Variables button to open up the Environment Variable settings.
+   3. Under System variables, create a new variable called IP2ProxyHTTPModuleConfig and set the value to the full path of the new folder.
 
 4. Create a PowerShell script called installgac.ps1 and paste the following code into it.
 
@@ -96,10 +96,10 @@ iisreset
 7. Run installgac.ps1 to install the dll into the GAC. Keep the uninstallgac.ps1 in case you need to uninstall the dll. 
 
 8. Installing the module in IIS.
-   a. Open the IIS Manager then navigate to the server level settings and double-click on the Modules icon.
-   b. In the Modules settings, click on the Add Managed Module at the right-hand side.
-   c. Key in IP2ProxyHTTPModule for the Name and select IP2Proxy.HTTPModule as the Type.
-   d. Click OK then restart IIS to complete the installation.
+   1. Open the IIS Manager then navigate to the server level settings and double-click on the Modules icon.
+   2. In the Modules settings, click on the Add Managed Module at the right-hand side.
+   3. Key in IP2ProxyHTTPModule for the Name and select IP2Proxy.HTTPModule as the Type.
+   4. Click OK then restart IIS to complete the installation.
 
 9. Open the IP2Proxy-config.xml in your new folder using any text editor. Fill in the <BIN_File> tag with the absolute path to your BIN data file and remove the HTTP_X_FORWARDED_FOR if your website is not behind a proxy. Save your changes.
 
