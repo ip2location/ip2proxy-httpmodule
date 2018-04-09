@@ -121,13 +121,13 @@ Below are the server variables set by the IP2Proxy HTTP Module. You can use any 
 
 |Variable Name|Description|
 |---|---|
-|HTTP_X_PROXY_IS_PROXY|Possible values:<ul><li>-1 : errors</li><li>0 : not a proxy</li><li>1 : a proxy</li><li>2 : a data center IP address</li></ul>|
-|HTTP_X_PROXY_TYPE|Proxy type. Please visit [IP2Location](https://www.ip2location.com/databases/px4-ip-proxytype-country-region-city-isp) for the list of proxy types supported|
-|HTTP_X_PROXY_COUNTRY_SHORT|ISO3166-1 country code (2-digits) of the proxy.|
-|HTTP_X_PROXY_COUNTRY_LONG|ISO3166-1 country name of the proxy.|
-|HTTP_X_PROXY_REGION|ISO3166-2 region name of the proxy. Please visit [ISO3166-2 Subdivision Code](https://www.ip2location.com/free/iso3166-2) for the information of ISO3166-2 supported|
-|HTTP_X_PROXY_CITY|City name of the proxy.|
-|HTTP_X_PROXY_ISP|ISP name of the proxy.|
+|HTTP_X_IP2PROXY_IS_PROXY|Possible values:<ul><li>-1 : errors</li><li>0 : not a proxy</li><li>1 : a proxy</li><li>2 : a data center IP address</li></ul>|
+|HTTP_X_IP2PROXY_PROXY_TYPE|Proxy type. Please visit [IP2Location](https://www.ip2location.com/databases/px4-ip-proxytype-country-region-city-isp) for the list of proxy types supported|
+|HTTP_X_IP2PROXY_COUNTRY_SHORT|ISO3166-1 country code (2-digits) of the proxy.|
+|HTTP_X_IP2PROXY_COUNTRY_LONG|ISO3166-1 country name of the proxy.|
+|HTTP_X_IP2PROXY_REGION|ISO3166-2 region name of the proxy. Please visit [ISO3166-2 Subdivision Code](https://www.ip2location.com/free/iso3166-2) for the information of ISO3166-2 supported|
+|HTTP_X_IP2PROXY_CITY|City name of the proxy.|
+|HTTP_X_IP2PROXY_ISP|ISP name of the proxy.|
 
 ___
 
@@ -138,13 +138,13 @@ ___
 ```vb.net
 Private Sub ShowServerVariable()
     Response.Write(Request.ServerVariables("REMOTE_ADDR") & "<br>")
-    Response.Write(Request.ServerVariables("HTTP_X_PROXY_IS_PROXY") & "<br>")
-    Response.Write(Request.ServerVariables("HTTP_X_PROXY_TYPE") & "<br>")
-    Response.Write(Request.ServerVariables("HTTP_X_PROXY_COUNTRY_SHORT") & "<br>")
-    Response.Write(Request.ServerVariables("HTTP_X_PROXY_COUNTRY_LONG") & "<br>")
-    Response.Write(Request.ServerVariables("HTTP_X_PROXY_REGION") & "<br>")
-    Response.Write(Request.ServerVariables("HTTP_X_PROXY_CITY") & "<br>")
-    Response.Write(Request.ServerVariables("HTTP_X_PROXY_ISP") & "<br>")
+    Response.Write(Request.ServerVariables("HTTP_X_IP2PROXY_IS_PROXY") & "<br>")
+    Response.Write(Request.ServerVariables("HTTP_X_IP2PROXY_PROXY_TYPE") & "<br>")
+    Response.Write(Request.ServerVariables("HTTP_X_IP2PROXY_COUNTRY_SHORT") & "<br>")
+    Response.Write(Request.ServerVariables("HTTP_X_IP2PROXY_COUNTRY_LONG") & "<br>")
+    Response.Write(Request.ServerVariables("HTTP_X_IP2PROXY_REGION") & "<br>")
+    Response.Write(Request.ServerVariables("HTTP_X_IP2PROXY_CITY") & "<br>")
+    Response.Write(Request.ServerVariables("HTTP_X_IP2PROXY_ISP") & "<br>")
 End Sub
 ```
 
@@ -154,13 +154,13 @@ End Sub
 private void ShowServerVariable()
 {
    Response.Write(Request.ServerVariables["REMOTE_ADDR"] + "\n");
-   Response.Write(Request.ServerVariables["HTTP_X_PROXY_IS_PROXY"] + "\n");
-   Response.Write(Request.ServerVariables["HTTP_X_PROXY_TYPE"] + "\n");
-   Response.Write(Request.ServerVariables["HTTP_X_PROXY_COUNTRY_SHORT"] + "\n");
-   Response.Write(Request.ServerVariables["HTTP_X_PROXY_COUNTRY_LONG"] + "\n");
-   Response.Write(Request.ServerVariables["HTTP_X_PROXY_REGION"] + "\n");
-   Response.Write(Request.ServerVariables["HTTP_X_PROXY_CITY"] + "\n");
-   Response.Write(Request.ServerVariables["HTTP_X_PROXY_ISP"] + "\n");
+   Response.Write(Request.ServerVariables["HTTP_X_IP2PROXY_IS_PROXY"] + "\n");
+   Response.Write(Request.ServerVariables["HTTP_X_IP2PROXY_PROXY_TYPE"] + "\n");
+   Response.Write(Request.ServerVariables["HTTP_X_IP2PROXY_COUNTRY_SHORT"] + "\n");
+   Response.Write(Request.ServerVariables["HTTP_X_IP2PROXY_COUNTRY_LONG"] + "\n");
+   Response.Write(Request.ServerVariables["HTTP_X_IP2PROXY_REGION"] + "\n");
+   Response.Write(Request.ServerVariables["HTTP_X_IP2PROXY_CITY"] + "\n");
+   Response.Write(Request.ServerVariables["HTTP_X_IP2PROXY_ISP"] + "\n");
 }
 ```
 
@@ -173,13 +173,13 @@ private void ShowServerVariable()
 </head>
 <body>
     <%=Request.ServerVariables("REMOTE_ADDR") & "<br>"%>
-    <%=Request.ServerVariables("HTTP_X_PROXY_IS_PROXY") & "<br>"%>
-    <%=Request.ServerVariables("HTTP_X_PROXY_TYPE") & "<br>"%>
-    <%=Request.ServerVariables("HTTP_X_PROXY_COUNTRY_SHORT") & "<br>"%>
-    <%=Request.ServerVariables("HTTP_X_PROXY_COUNTRY_LONG") & "<br>"%>
-    <%=Request.ServerVariables("HTTP_X_PROXY_REGION") & "<br>"%>
-    <%=Request.ServerVariables("HTTP_X_PROXY_CITY") & "<br>"%>
-    <%=Request.ServerVariables("HTTP_X_PROXY_ISP") & "<br>"%>
+    <%=Request.ServerVariables("HTTP_X_IP2PROXY_IS_PROXY") & "<br>"%>
+    <%=Request.ServerVariables("HTTP_X_IP2PROXY_PROXY_TYPE") & "<br>"%>
+    <%=Request.ServerVariables("HTTP_X_IP2PROXY_COUNTRY_SHORT") & "<br>"%>
+    <%=Request.ServerVariables("HTTP_X_IP2PROXY_COUNTRY_LONG") & "<br>"%>
+    <%=Request.ServerVariables("HTTP_X_IP2PROXY_REGION") & "<br>"%>
+    <%=Request.ServerVariables("HTTP_X_IP2PROXY_CITY") & "<br>"%>
+    <%=Request.ServerVariables("HTTP_X_IP2PROXY_ISP") & "<br>"%>
 </body>
 </html>
 ```
@@ -194,13 +194,13 @@ private void ShowServerVariable()
 <body>
 <?php
     echo $_SERVER['REMOTE_ADDR'] . "<br>";
-    echo $_SERVER['HTTP_X_PROXY_IS_PROXY'] . "<br>";
-    echo $_SERVER['HTTP_X_PROXY_TYPE'] . "<br>";
-    echo $_SERVER['HTTP_X_PROXY_COUNTRY_SHORT'] . "<br>";
-    echo $_SERVER['HTTP_X_PROXY_COUNTRY_LONG'] . "<br>";
-    echo $_SERVER['HTTP_X_PROXY_REGION'] . "<br>";
-    echo $_SERVER['HTTP_X_PROXY_CITY'] . "<br>";
-    echo $_SERVER['HTTP_X_PROXY_ISP'] . "<br>";
+    echo $_SERVER['HTTP_X_IP2PROXY_IS_PROXY'] . "<br>";
+    echo $_SERVER['HTTP_X_IP2PROXY_PROXY_TYPE'] . "<br>";
+    echo $_SERVER['HTTP_X_IP2PROXY_COUNTRY_SHORT'] . "<br>";
+    echo $_SERVER['HTTP_X_IP2PROXY_COUNTRY_LONG'] . "<br>";
+    echo $_SERVER['HTTP_X_IP2PROXY_REGION'] . "<br>";
+    echo $_SERVER['HTTP_X_IP2PROXY_CITY'] . "<br>";
+    echo $_SERVER['HTTP_X_IP2PROXY_ISP'] . "<br>";
 ?>
 </body>
 </html>

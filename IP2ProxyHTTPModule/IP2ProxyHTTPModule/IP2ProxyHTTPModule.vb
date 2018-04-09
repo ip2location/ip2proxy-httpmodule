@@ -28,7 +28,7 @@ Public Class HTTPModule : Implements IHttpModule
     Private baseDir As String = ""
     Public whitespace As Regex
     Public proxyDatabasePath As String = ""
-    Private version As String = "1.0" 'follow the IP2Proxy version
+    Private version As String = "1.1" 'follow the IP2Proxy version
 
     Public Sub Dispose() Implements System.Web.IHttpModule.Dispose
         LogDebug.WriteLog("Exiting IP2Proxy HTTP Module")
@@ -101,13 +101,13 @@ Public Class HTTPModule : Implements IHttpModule
         LogDebug.WriteLog("Query Status: " & result.Is_Proxy)
         LogDebug.WriteLog("Full URL: " & myurl)
 
-        request.ServerVariables.Item("HTTP_X_PROXY_COUNTRY_SHORT") = result.Country_Short
-        request.ServerVariables.Item("HTTP_X_PROXY_COUNTRY_LONG") = result.Country_Long
-        request.ServerVariables.Item("HTTP_X_PROXY_REGION") = result.Region
-        request.ServerVariables.Item("HTTP_X_PROXY_CITY") = result.City
-        request.ServerVariables.Item("HTTP_X_PROXY_ISP") = result.ISP
-        request.ServerVariables.Item("HTTP_X_PROXY_TYPE") = result.Proxy_Type
-        request.ServerVariables.Item("HTTP_X_PROXY_IS_PROXY") = result.Is_Proxy
+        request.ServerVariables.Item("HTTP_X_IP2PROXY_COUNTRY_SHORT") = result.Country_Short
+        request.ServerVariables.Item("HTTP_X_IP2PROXY_COUNTRY_LONG") = result.Country_Long
+        request.ServerVariables.Item("HTTP_X_IP2PROXY_REGION") = result.Region
+        request.ServerVariables.Item("HTTP_X_IP2PROXY_CITY") = result.City
+        request.ServerVariables.Item("HTTP_X_IP2PROXY_ISP") = result.ISP
+        request.ServerVariables.Item("HTTP_X_IP2PROXY_PROXY_TYPE") = result.Proxy_Type
+        request.ServerVariables.Item("HTTP_X_IP2PROXY_IS_PROXY") = result.Is_Proxy
     End Sub
 
     ''USING THIS FOR TESTING AND GENERATING A CONFIG FILE TEMPLATE
