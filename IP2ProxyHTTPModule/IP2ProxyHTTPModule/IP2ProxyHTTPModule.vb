@@ -28,7 +28,7 @@ Public Class HTTPModule : Implements IHttpModule
     Private baseDir As String = ""
     Public whitespace As Regex
     Public proxyDatabasePath As String = ""
-    Private version As String = "2.0" 'follow the IP2Proxy version
+    Private version As String = "2.1" 'follow the IP2Proxy version
 
     Public Sub Dispose() Implements System.Web.IHttpModule.Dispose
         LogDebug.WriteLog("Exiting IP2Proxy HTTP Module")
