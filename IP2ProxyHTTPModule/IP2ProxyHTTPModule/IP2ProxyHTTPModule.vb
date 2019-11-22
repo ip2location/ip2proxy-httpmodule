@@ -28,7 +28,7 @@ Public Class HTTPModule : Implements IHttpModule
     Private baseDir As String = ""
     Public whitespace As Regex
     Public proxyDatabasePath As String = ""
-    Private version As String = "2.1" 'follow the IP2Proxy version
+    Private version As String = "2.2" 'follow the IP2Proxy version
 
     Public Sub Dispose() Implements System.Web.IHttpModule.Dispose
         LogDebug.WriteLog("Exiting IP2Proxy HTTP Module")
@@ -94,6 +94,9 @@ Public Class HTTPModule : Implements IHttpModule
         Else
             myIP = request.UserHostAddress
         End If
+
+        ' debug only
+        'myIP = "8.8.8.8"
 
         ' output extra info so we know it is working
         LogDebug.WriteLog("Querying IP: " & myIP)

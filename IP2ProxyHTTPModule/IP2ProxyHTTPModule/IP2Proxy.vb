@@ -242,16 +242,28 @@ Public NotInheritable Class IP2Proxy
                     _IPv6ColumnSize = 16 + ((_DBColumn - 1) << 2) ' 4 bytes each column, except IPFrom column which is 16 bytes
 
                     ' since both IPv4 and IPv6 use 4 bytes for the below columns, can just do it once here
-                    COUNTRY_POSITION_OFFSET = If(COUNTRY_POSITION(_DBType) <> 0, (COUNTRY_POSITION(_DBType) - 1) << 2, 0)
-                    REGION_POSITION_OFFSET = If(REGION_POSITION(_DBType) <> 0, (REGION_POSITION(_DBType) - 1) << 2, 0)
-                    CITY_POSITION_OFFSET = If(CITY_POSITION(_DBType) <> 0, (CITY_POSITION(_DBType) - 1) << 2, 0)
-                    ISP_POSITION_OFFSET = If(ISP_POSITION(_DBType) <> 0, (ISP_POSITION(_DBType) - 1) << 2, 0)
-                    PROXYTYPE_POSITION_OFFSET = If(PROXYTYPE_POSITION(_DBType) <> 0, (PROXYTYPE_POSITION(_DBType) - 1) << 2, 0)
-                    DOMAIN_POSITION_OFFSET = If(DOMAIN_POSITION(_DBType) <> 0, (DOMAIN_POSITION(_DBType) - 1) << 2, 0)
-                    USAGETYPE_POSITION_OFFSET = If(USAGETYPE_POSITION(_DBType) <> 0, (USAGETYPE_POSITION(_DBType) - 1) << 2, 0)
-                    ASN_POSITION_OFFSET = If(ASN_POSITION(_DBType) <> 0, (ASN_POSITION(_DBType) - 1) << 2, 0)
-                    AS_POSITION_OFFSET = If(AS_POSITION(_DBType) <> 0, (AS_POSITION(_DBType) - 1) << 2, 0)
-                    LASTSEEN_POSITION_OFFSET = If(LASTSEEN_POSITION(_DBType) <> 0, (LASTSEEN_POSITION(_DBType) - 1) << 2, 0)
+                    'COUNTRY_POSITION_OFFSET = If(COUNTRY_POSITION(_DBType) <> 0, (COUNTRY_POSITION(_DBType) - 1) << 2, 0)
+                    'REGION_POSITION_OFFSET = If(REGION_POSITION(_DBType) <> 0, (REGION_POSITION(_DBType) - 1) << 2, 0)
+                    'CITY_POSITION_OFFSET = If(CITY_POSITION(_DBType) <> 0, (CITY_POSITION(_DBType) - 1) << 2, 0)
+                    'ISP_POSITION_OFFSET = If(ISP_POSITION(_DBType) <> 0, (ISP_POSITION(_DBType) - 1) << 2, 0)
+                    'PROXYTYPE_POSITION_OFFSET = If(PROXYTYPE_POSITION(_DBType) <> 0, (PROXYTYPE_POSITION(_DBType) - 1) << 2, 0)
+                    'DOMAIN_POSITION_OFFSET = If(DOMAIN_POSITION(_DBType) <> 0, (DOMAIN_POSITION(_DBType) - 1) << 2, 0)
+                    'USAGETYPE_POSITION_OFFSET = If(USAGETYPE_POSITION(_DBType) <> 0, (USAGETYPE_POSITION(_DBType) - 1) << 2, 0)
+                    'ASN_POSITION_OFFSET = If(ASN_POSITION(_DBType) <> 0, (ASN_POSITION(_DBType) - 1) << 2, 0)
+                    'AS_POSITION_OFFSET = If(AS_POSITION(_DBType) <> 0, (AS_POSITION(_DBType) - 1) << 2, 0)
+                    'LASTSEEN_POSITION_OFFSET = If(LASTSEEN_POSITION(_DBType) <> 0, (LASTSEEN_POSITION(_DBType) - 1) << 2, 0)
+
+                    ' slightly different offset for reading by row
+                    COUNTRY_POSITION_OFFSET = If(COUNTRY_POSITION(_DBType) <> 0, (COUNTRY_POSITION(_DBType) - 2) << 2, 0)
+                    REGION_POSITION_OFFSET = If(REGION_POSITION(_DBType) <> 0, (REGION_POSITION(_DBType) - 2) << 2, 0)
+                    CITY_POSITION_OFFSET = If(CITY_POSITION(_DBType) <> 0, (CITY_POSITION(_DBType) - 2) << 2, 0)
+                    ISP_POSITION_OFFSET = If(ISP_POSITION(_DBType) <> 0, (ISP_POSITION(_DBType) - 2) << 2, 0)
+                    PROXYTYPE_POSITION_OFFSET = If(PROXYTYPE_POSITION(_DBType) <> 0, (PROXYTYPE_POSITION(_DBType) - 2) << 2, 0)
+                    DOMAIN_POSITION_OFFSET = If(DOMAIN_POSITION(_DBType) <> 0, (DOMAIN_POSITION(_DBType) - 2) << 2, 0)
+                    USAGETYPE_POSITION_OFFSET = If(USAGETYPE_POSITION(_DBType) <> 0, (USAGETYPE_POSITION(_DBType) - 2) << 2, 0)
+                    ASN_POSITION_OFFSET = If(ASN_POSITION(_DBType) <> 0, (ASN_POSITION(_DBType) - 2) << 2, 0)
+                    AS_POSITION_OFFSET = If(AS_POSITION(_DBType) <> 0, (AS_POSITION(_DBType) - 2) << 2, 0)
+                    LASTSEEN_POSITION_OFFSET = If(LASTSEEN_POSITION(_DBType) <> 0, (LASTSEEN_POSITION(_DBType) - 2) << 2, 0)
 
                     COUNTRY_ENABLED = If(COUNTRY_POSITION(_DBType) <> 0, True, False)
                     REGION_ENABLED = If(REGION_POSITION(_DBType) <> 0, True, False)
@@ -474,18 +486,25 @@ Public NotInheritable Class IP2Proxy
                     Dim [AS] As String = MSG_NOT_SUPPORTED
                     Dim Last_Seen As String = MSG_NOT_SUPPORTED
 
+                    Dim FirstCol As Integer = 4 ' for IPv4, IP From is 4 bytes
                     If IPType = 6 Then ' IPv6
-                        RowOffset = RowOffset + 12 ' coz below is assuming all columns are 4 bytes, so got 12 left to go to make 16 bytes total
+                        FirstCol = 16 ' 16 bytes for IPv6
+                        'RowOffset = RowOffset + 12 ' coz below is assuming all columns are 4 bytes, so got 12 left to go to make 16 bytes total
                     End If
+
+                    ' read the row here after the IP From column (remaining columns are all 4 bytes)
+                    Dim Row() As Byte = ReadRow(RowOffset + FirstCol, ColumnSize - FirstCol, FS)
 
                     If PROXYTYPE_ENABLED Then
                         If Mode = Modes.ALL OrElse Mode = Modes.PROXY_TYPE OrElse Mode = Modes.IS_PROXY Then
-                            Proxy_Type = ReadStr(Read32(RowOffset + PROXYTYPE_POSITION_OFFSET, FS), FS)
+                            'Proxy_Type = ReadStr(Read32(RowOffset + PROXYTYPE_POSITION_OFFSET, FS), FS)
+                            Proxy_Type = ReadStr(Read32_Row(Row, PROXYTYPE_POSITION_OFFSET), FS)
                         End If
                     End If
                     If COUNTRY_ENABLED Then
                         If Mode = Modes.ALL OrElse Mode = Modes.COUNTRY_SHORT OrElse Mode = Modes.COUNTRY_LONG OrElse Mode = Modes.IS_PROXY Then
-                            CountryPos = Read32(RowOffset + COUNTRY_POSITION_OFFSET, FS)
+                            'CountryPos = Read32(RowOffset + COUNTRY_POSITION_OFFSET, FS)
+                            CountryPos = Read32_Row(Row, COUNTRY_POSITION_OFFSET)
                         End If
                         If Mode = Modes.ALL OrElse Mode = Modes.COUNTRY_SHORT OrElse Mode = Modes.IS_PROXY Then
                             Country_Short = ReadStr(CountryPos, FS)
@@ -496,42 +515,50 @@ Public NotInheritable Class IP2Proxy
                     End If
                     If REGION_ENABLED Then
                         If Mode = Modes.ALL OrElse Mode = Modes.REGION Then
-                            Region = ReadStr(Read32(RowOffset + REGION_POSITION_OFFSET, FS), FS)
+                            'Region = ReadStr(Read32(RowOffset + REGION_POSITION_OFFSET, FS), FS)
+                            Region = ReadStr(Read32_Row(Row, REGION_POSITION_OFFSET), FS)
                         End If
                     End If
                     If CITY_ENABLED Then
                         If Mode = Modes.ALL OrElse Mode = Modes.CITY Then
-                            City = ReadStr(Read32(RowOffset + CITY_POSITION_OFFSET, FS), FS)
+                            'City = ReadStr(Read32(RowOffset + CITY_POSITION_OFFSET, FS), FS)
+                            City = ReadStr(Read32_Row(Row, CITY_POSITION_OFFSET), FS)
                         End If
                     End If
                     If ISP_ENABLED Then
                         If Mode = Modes.ALL OrElse Mode = Modes.ISP Then
-                            ISP = ReadStr(Read32(RowOffset + ISP_POSITION_OFFSET, FS), FS)
+                            'ISP = ReadStr(Read32(RowOffset + ISP_POSITION_OFFSET, FS), FS)
+                            ISP = ReadStr(Read32_Row(Row, ISP_POSITION_OFFSET), FS)
                         End If
                     End If
                     If DOMAIN_ENABLED Then
                         If Mode = Modes.ALL OrElse Mode = Modes.DOMAIN Then
-                            Domain = ReadStr(Read32(RowOffset + DOMAIN_POSITION_OFFSET, FS), FS)
+                            'Domain = ReadStr(Read32(RowOffset + DOMAIN_POSITION_OFFSET, FS), FS)
+                            Domain = ReadStr(Read32_Row(Row, DOMAIN_POSITION_OFFSET), FS)
                         End If
                     End If
                     If USAGETYPE_ENABLED Then
                         If Mode = Modes.ALL OrElse Mode = Modes.USAGE_TYPE Then
-                            Usage_Type = ReadStr(Read32(RowOffset + USAGETYPE_POSITION_OFFSET, FS), FS)
+                            'Usage_Type = ReadStr(Read32(RowOffset + USAGETYPE_POSITION_OFFSET, FS), FS)
+                            Usage_Type = ReadStr(Read32_Row(Row, USAGETYPE_POSITION_OFFSET), FS)
                         End If
                     End If
                     If ASN_ENABLED Then
                         If Mode = Modes.ALL OrElse Mode = Modes.ASN Then
-                            ASN = ReadStr(Read32(RowOffset + ASN_POSITION_OFFSET, FS), FS)
+                            'ASN = ReadStr(Read32(RowOffset + ASN_POSITION_OFFSET, FS), FS)
+                            ASN = ReadStr(Read32_Row(Row, ASN_POSITION_OFFSET), FS)
                         End If
                     End If
                     If AS_ENABLED Then
                         If Mode = Modes.ALL OrElse Mode = Modes.AS Then
-                            [AS] = ReadStr(Read32(RowOffset + AS_POSITION_OFFSET, FS), FS)
+                            '[AS] = ReadStr(Read32(RowOffset + AS_POSITION_OFFSET, FS), FS)
+                            [AS] = ReadStr(Read32_Row(Row, AS_POSITION_OFFSET), FS)
                         End If
                     End If
                     If LASTSEEN_ENABLED Then
                         If Mode = Modes.ALL OrElse Mode = Modes.LAST_SEEN Then
-                            Last_Seen = ReadStr(Read32(RowOffset + LASTSEEN_POSITION_OFFSET, FS), FS)
+                            'Last_Seen = ReadStr(Read32(RowOffset + LASTSEEN_POSITION_OFFSET, FS), FS)
+                            Last_Seen = ReadStr(Read32_Row(Row, LASTSEEN_POSITION_OFFSET), FS)
                         End If
                     End If
 
@@ -596,6 +623,14 @@ Public NotInheritable Class IP2Proxy
         End Try
     End Function
 
+    ' Read whole row into array of bytes
+    Private Function ReadRow(ByVal _Pos As Long, ByVal MyLen As UInt32, ByRef MyFilestream As FileStream) As Byte()
+        Dim row(MyLen - 1) As Byte
+        MyFilestream.Seek(_Pos - 1, SeekOrigin.Begin)
+        MyFilestream.Read(row, 0, MyLen)
+        Return row
+    End Function
+
     ' Read 8 bits in the binary database
     Private Function Read8(ByVal _Pos As Long, ByRef MyFilestream As FileStream) As Byte
         Try
@@ -638,6 +673,19 @@ Public NotInheritable Class IP2Proxy
             'LogDebug.WriteLog("Read128-" & Ex.Message)
             Throw
             'Return New IntX()
+        End Try
+    End Function
+
+    ' Read 32 bits in byte array
+    Private Function Read32_Row(ByRef Row() As Byte, ByVal ByteOffset As Integer) As IntX
+        Try
+            Dim _Byte(3) As Byte ' 4 bytes
+            Array.Copy(Row, ByteOffset, _Byte, 0, 4)
+
+            Return New IntX(System.BitConverter.ToUInt32(_Byte, 0).ToString())
+        Catch ex As Exception
+            Throw
+            'ErrLog("Read32_Row-" & ex.Message)
         End Try
     End Function
 
