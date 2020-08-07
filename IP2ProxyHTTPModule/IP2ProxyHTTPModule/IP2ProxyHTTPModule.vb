@@ -8,7 +8,7 @@
 ' URL          : http://www.ip2location.com
 ' Email        : sales@ip2location.com
 '
-' Copyright (c) 2002-2019 IP2Location.com
+' Copyright (c) 2002-2020 IP2Location.com
 '
 '---------------------------------------------------------------------------
 
@@ -28,7 +28,7 @@ Public Class HTTPModule : Implements IHttpModule
     Private baseDir As String = ""
     Public whitespace As Regex
     Public proxyDatabasePath As String = ""
-    Private version As String = "2.2" 'follow the IP2Proxy version
+    Private version As String = "2.3" 'follow the IP2Proxy version
 
     Public Sub Dispose() Implements System.Web.IHttpModule.Dispose
         LogDebug.WriteLog("Exiting IP2Proxy HTTP Module")
@@ -116,6 +116,7 @@ Public Class HTTPModule : Implements IHttpModule
         request.ServerVariables.Item("HTTP_X_IP2PROXY_ASN") = result.ASN
         request.ServerVariables.Item("HTTP_X_IP2PROXY_AS") = result.AS
         request.ServerVariables.Item("HTTP_X_IP2PROXY_LAST_SEEN") = result.Last_Seen
+        request.ServerVariables.Item("HTTP_X_IP2PROXY_THREAT") = result.Threat
     End Sub
 
     ''USING THIS FOR TESTING AND GENERATING A CONFIG FILE TEMPLATE
@@ -127,7 +128,7 @@ Public Class HTTPModule : Implements IHttpModule
     '    Dim config As New IP2ProxyConfig()
 
     '    Dim mydirectory As String = "bin\"
-    '    Dim mybin As String = mydirectory & "IP2PROXY-IP-PROXYTYPE-COUNTRY-REGION-CITY-ISP-DOMAIN-USAGETYPE-ASN-LASTSEEN.BIN"
+    '    Dim mybin As String = mydirectory & "IP2PROXY-IP-PROXYTYPE-COUNTRY-REGION-CITY-ISP-DOMAIN-USAGETYPE-ASN-LASTSEEN-THREAT-RESIDENTIAL.BIN"
     '    Dim mycustomipservervariable As String = ""
 
     '    'SETTINGS OBJECT

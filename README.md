@@ -1,6 +1,6 @@
 # IP2Proxy HTTP Module
 
-This IIS managed module allows user to query an IP address if it was being used as VPN anonymizer, open proxies, web proxies, Tor exits, data center, web hosting (DCH) range and search engine robots (SES). It lookup the proxy IP address from **IP2Proxy BIN Data** file. This data file can be downloaded at
+This IIS managed module allows user to query an IP address if it was being used as VPN anonymizer, open proxies, web proxies, Tor exits, data center, web hosting (DCH) range, search engine robots (SES) and residential (RES). It lookup the proxy IP address from **IP2Proxy BIN Data** file. This data file can be downloaded at
 
 * Free IP2Proxy BIN Data: https://lite.ip2location.com
 * Commercial IP2Proxy BIN Data: https://www.ip2location.com/database/ip2proxy
@@ -122,17 +122,18 @@ Below are the server variables set by the IP2Proxy HTTP Module. You can use any 
 |Variable Name|Description|
 |---|---|
 |HTTP_X_IP2PROXY_IS_PROXY|Possible values:<ul><li>-1 : errors</li><li>0 : not a proxy</li><li>1 : a proxy</li><li>2 : a data center IP address or search engine robot</li></ul>|
-|HTTP_X_IP2PROXY_PROXY_TYPE|Proxy type. Please visit [IP2Location](https://www.ip2location.com/database/px8-ip-proxytype-country-region-city-isp-domain-usagetype-asn-lastseen) for the list of proxy types supported.|
+|HTTP_X_IP2PROXY_PROXY_TYPE|Proxy type. Please visit [IP2Location](https://www.ip2location.com/database/px10-ip-proxytype-country-region-city-isp-domain-usagetype-asn-lastseen-threat-residential) for the list of proxy types supported.|
 |HTTP_X_IP2PROXY_COUNTRY_SHORT|ISO3166-1 country code (2-digits) of the proxy.|
 |HTTP_X_IP2PROXY_COUNTRY_LONG|ISO3166-1 country name of the proxy.|
 |HTTP_X_IP2PROXY_REGION|ISO3166-2 region name of the proxy. Please visit [ISO3166-2 Subdivision Code](https://www.ip2location.com/free/iso3166-2) for the information of ISO3166-2 supported|
 |HTTP_X_IP2PROXY_CITY|City name of the proxy.|
 |HTTP_X_IP2PROXY_ISP|ISP name of the proxy.|
 |HTTP_X_IP2PROXY_DOMAIN|Domain name of the proxy.|
-|HTTP_X_IP2PROXY_USAGE_TYPE|Usage type. Please visit [IP2Location](https://www.ip2location.com/database/px8-ip-proxytype-country-region-city-isp-domain-usagetype-asn-lastseen) for the list of usage types supported.|
+|HTTP_X_IP2PROXY_USAGE_TYPE|Usage type. Please visit [IP2Location](https://www.ip2location.com/database/px10-ip-proxytype-country-region-city-isp-domain-usagetype-asn-lastseen-threat-residential) for the list of usage types supported.|
 |HTTP_X_IP2PROXY_ASN|Autonomous system number of the proxy.|
 |HTTP_X_IP2PROXY_AS|Autonomous system name of the proxy.|
 |HTTP_X_IP2PROXY_LAST_SEEN|Number of days that the proxy was last seen.|
+|HTTP_X_IP2PROXY_THREAT|Threat type of the proxy.|
 
 ___
 
@@ -155,6 +156,7 @@ Private Sub ShowServerVariable()
     Response.Write(Request.ServerVariables("HTTP_X_IP2PROXY_ASN") & "<br>")
     Response.Write(Request.ServerVariables("HTTP_X_IP2PROXY_AS") & "<br>")
     Response.Write(Request.ServerVariables("HTTP_X_IP2PROXY_LAST_SEEN") & "<br>")
+    Response.Write(Request.ServerVariables("HTTP_X_IP2PROXY_THREAT") & "<br>")
 End Sub
 ```
 
@@ -176,6 +178,7 @@ private void ShowServerVariable()
    Response.Write(Request.ServerVariables("HTTP_X_IP2PROXY_ASN") + "\n");
    Response.Write(Request.ServerVariables("HTTP_X_IP2PROXY_AS") + "\n");
    Response.Write(Request.ServerVariables("HTTP_X_IP2PROXY_LAST_SEEN") + "\n");
+   Response.Write(Request.ServerVariables("HTTP_X_IP2PROXY_THREAT") + "\n");
 }
 ```
 
@@ -200,6 +203,7 @@ private void ShowServerVariable()
     <%=Request.ServerVariables("HTTP_X_IP2PROXY_ASN") & "<br>"%>
     <%=Request.ServerVariables("HTTP_X_IP2PROXY_AS") & "<br>"%>
     <%=Request.ServerVariables("HTTP_X_IP2PROXY_LAST_SEEN") & "<br>"%>
+    <%=Request.ServerVariables("HTTP_X_IP2PROXY_THREAT") & "<br>"%>
 </body>
 </html>
 ```
@@ -226,6 +230,7 @@ private void ShowServerVariable()
     echo $_SERVER['HTTP_X_IP2PROXY_ASN'] . "<br>";
     echo $_SERVER['HTTP_X_IP2PROXY_AS'] . "<br>";
     echo $_SERVER['HTTP_X_IP2PROXY_LAST_SEEN'] . "<br>";
+    echo $_SERVER['HTTP_X_IP2PROXY_THREAT'] . "<br>";
 ?>
 </body>
 </html>
