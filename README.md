@@ -134,6 +134,7 @@ Below are the server variables set by the IP2Proxy HTTP Module. You can use any 
 |HTTP_X_IP2PROXY_AS|Autonomous system name of the proxy.|
 |HTTP_X_IP2PROXY_LAST_SEEN|Number of days that the proxy was last seen.|
 |HTTP_X_IP2PROXY_THREAT|Threat type of the proxy.|
+|HTTP_X_IP2PROXY_PROVIDER|Provider of the proxy.|
 
 ___
 
@@ -157,6 +158,7 @@ Private Sub ShowServerVariable()
     Response.Write(Request.ServerVariables("HTTP_X_IP2PROXY_AS") & "<br>")
     Response.Write(Request.ServerVariables("HTTP_X_IP2PROXY_LAST_SEEN") & "<br>")
     Response.Write(Request.ServerVariables("HTTP_X_IP2PROXY_THREAT") & "<br>")
+    Response.Write(Request.ServerVariables("HTTP_X_IP2PROXY_PROVIDER") & "<br>")
 End Sub
 ```
 
@@ -179,6 +181,7 @@ private void ShowServerVariable()
    Response.Write(Request.ServerVariables("HTTP_X_IP2PROXY_AS") + "\n");
    Response.Write(Request.ServerVariables("HTTP_X_IP2PROXY_LAST_SEEN") + "\n");
    Response.Write(Request.ServerVariables("HTTP_X_IP2PROXY_THREAT") + "\n");
+   Response.Write(Request.ServerVariables("HTTP_X_IP2PROXY_PROVIDER") + "\n");
 }
 ```
 
@@ -204,6 +207,7 @@ private void ShowServerVariable()
     <%=Request.ServerVariables("HTTP_X_IP2PROXY_AS") & "<br>"%>
     <%=Request.ServerVariables("HTTP_X_IP2PROXY_LAST_SEEN") & "<br>"%>
     <%=Request.ServerVariables("HTTP_X_IP2PROXY_THREAT") & "<br>"%>
+    <%=Request.ServerVariables("HTTP_X_IP2PROXY_PROVIDER") & "<br>"%>
 </body>
 </html>
 ```
@@ -231,6 +235,7 @@ private void ShowServerVariable()
     echo $_SERVER['HTTP_X_IP2PROXY_AS'] . "<br>";
     echo $_SERVER['HTTP_X_IP2PROXY_LAST_SEEN'] . "<br>";
     echo $_SERVER['HTTP_X_IP2PROXY_THREAT'] . "<br>";
+    echo $_SERVER['HTTP_X_IP2PROXY_PROVIDER'] . "<br>";
 ?>
 </body>
 </html>
