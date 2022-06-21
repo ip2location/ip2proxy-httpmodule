@@ -8,7 +8,7 @@
 ' URL          : http://www.ip2location.com
 ' Email        : sales@ip2location.com
 '
-' Copyright (c) 2002-2021 IP2Location.com
+' Copyright (c) 2002-2022 IP2Location.com
 '
 '---------------------------------------------------------------------------
 
@@ -26,7 +26,7 @@ Public Class HTTPModule : Implements IHttpModule
     Private baseDir As String = ""
     Public whitespace As Regex
     Public proxyDatabasePath As String = ""
-    Private version As String = "3.1"
+    Private version As String = "3.2"
 
     Public Sub Dispose() Implements System.Web.IHttpModule.Dispose
         LogDebug.WriteLog("Exiting IP2Proxy HTTP Module")

@@ -3,7 +3,7 @@
 ' URL          : http://www.ip2location.com
 ' Email        : sales@ip2location.com
 '
-' Copyright (c) 2002-2021 IP2Location.com
+' Copyright (c) 2002-2022 IP2Location.com
 '---------------------------------------------------------------------------
 
 Imports System.IO
@@ -246,20 +246,27 @@ Public NotInheritable Class IP2Proxy
         Try
             If _DBFilePath <> "" Then
                 Using myFileStream As New FileStream(_DBFilePath, FileMode.Open, FileAccess.Read)
-                    _DBType = Read8(1, myFileStream)
-                    _DBColumn = Read8(2, myFileStream)
-                    _DBYear = Read8(3, myFileStream)
-                    _DBMonth = Read8(4, myFileStream)
-                    _DBDay = Read8(5, myFileStream)
-                    _DBCount = Read32(6, myFileStream) '4 bytes
-                    _BaseAddr = Read32(10, myFileStream) '4 bytes
-                    _DBCountIPv6 = Read32(14, myFileStream) '4 bytes
-                    _BaseAddrIPv6 = Read32(18, myFileStream) '4 bytes
-                    _IndexBaseAddr = Read32(22, myFileStream) '4 bytes
-                    _IndexBaseAddrIPv6 = Read32(26, myFileStream) '4 bytes
-                    _ProductCode = Read8(30, myFileStream)
-                    _ProductType = Read8(31, myFileStream)
-                    _FileSize = Read32(32, myFileStream) '4 bytes
+                    Dim len = 64 ' 64-byte header
+                    Dim row(len - 1) As Byte
+
+                    myFileStream.Seek(0, SeekOrigin.Begin)
+                    myFileStream.Read(row, 0, len)
+
+                    _DBType = Read8Header(row, 0)
+                    _DBColumn = Read8Header(row, 1)
+                    _DBYear = Read8Header(row, 2)
+                    _DBMonth = Read8Header(row, 3)
+                    _DBDay = Read8Header(row, 4)
+                    _DBCount = Read32Header(row, 5) '4 bytes
+                    _BaseAddr = Read32Header(row, 9) '4 bytes
+                    _DBCountIPv6 = Read32Header(row, 13) '4 bytes
+                    _BaseAddrIPv6 = Read32Header(row, 17) '4 bytes
+                    _IndexBaseAddr = Read32Header(row, 21) '4 bytes
+                    _IndexBaseAddrIPv6 = Read32Header(row, 25) '4 bytes
+                    _ProductCode = Read8Header(row, 29)
+                    ' below 2 fields just read for now, not being used yet
+                    _ProductType = Read8Header(row, 30)
+                    _FileSize = Read32Header(row, 31) '4 bytes
 
                     ' check if is correct BIN (should be 2 for IP2Proxy BIN file), also checking for zipped file (PK being the first 2 chars)
                     If (_ProductCode <> 2 AndAlso _DBYear >= 21) OrElse (_DBType = 80 AndAlso _DBColumn = 75) Then ' only BINs from Jan 2021 onwards have this byte set
@@ -295,21 +302,32 @@ Public NotInheritable Class IP2Proxy
                     THREAT_ENABLED = THREAT_POSITION(_DBType) <> 0
                     PROVIDER_ENABLED = PROVIDER_POSITION(_DBType) <> 0
 
-                    Dim Pointer As Integer = _IndexBaseAddr
+                    Dim readLen = _IndexArrayIPv4.GetLength(0)
+                    If _IndexBaseAddrIPv6 > 0 Then
+                        readLen += _IndexArrayIPv6.GetLength(0)
+                    End If
+
+                    readLen *= 8 ' 4 bytes for both From/To
+                    Dim indexData(readLen - 1) As Byte
+
+                    myFileStream.Seek(_IndexBaseAddr - 1, SeekOrigin.Begin)
+                    myFileStream.Read(indexData, 0, readLen)
+
+                    Dim pointer As Integer = 0
 
                     ' read IPv4 index
                     For x As Integer = _IndexArrayIPv4.GetLowerBound(0) To _IndexArrayIPv4.GetUpperBound(0)
-                        _IndexArrayIPv4(x, 0) = Read32(Pointer, myFileStream) '4 bytes for from row
-                        _IndexArrayIPv4(x, 1) = Read32(Pointer + 4, myFileStream) '4 bytes for to row
-                        Pointer += 8
+                        _IndexArrayIPv4(x, 0) = Read32Header(indexData, pointer) '4 bytes for  row
+                        _IndexArrayIPv4(x, 1) = Read32Header(indexData, pointer + 4) '4 bytes for to row
+                        pointer += 8
                     Next
 
                     If _IndexBaseAddrIPv6 > 0 Then
                         ' read IPv6 index
                         For x As Integer = _IndexArrayIPv6.GetLowerBound(0) To _IndexArrayIPv6.GetUpperBound(0)
-                            _IndexArrayIPv6(x, 0) = Read32(Pointer, myFileStream) '4 bytes for from row
-                            _IndexArrayIPv6(x, 1) = Read32(Pointer + 4, myFileStream) '4 bytes for to row
-                            Pointer += 8
+                            _IndexArrayIPv6(x, 0) = Read32Header(indexData, pointer) '4 bytes for  row
+                            _IndexArrayIPv6(x, 1) = Read32Header(indexData, pointer + 4) '4 bytes for to row
+                            pointer += 8
                         Next
                     End If
                 End Using
@@ -368,6 +386,9 @@ Public NotInheritable Class IP2Proxy
         Dim RowOffset2 As Long = 0
         Dim ColumnSize As Integer = 0
         Dim OverCapacity As Boolean = False
+        Dim FullRow As Byte() = Nothing
+        Dim Row As Byte()
+        Dim FirstCol As Integer = 4 ' IP From is 4 bytes
 
         Try
             If IPAddress = "" OrElse IPAddress Is Nothing Then
@@ -453,6 +474,7 @@ Public NotInheritable Class IP2Proxy
                     High = _IndexArrayIPv4(IndexAddr, 1)
                 Case 6
                     ' IPv6
+                    FirstCol = 16 ' IPv6 is 16 bytes
                     If _DBCountIPv6 = 0 Then
                         With Result
                             .Is_Proxy = -1
@@ -494,8 +516,10 @@ Public NotInheritable Class IP2Proxy
                 RowOffset = BaseAddr + (Mid * ColumnSize)
                 RowOffset2 = RowOffset + ColumnSize
 
-                IPFrom = Read32Or128(RowOffset, IPType, FS)
-                IPTo = Read32Or128(RowOffset2, IPType, FS)
+                ' reading IP From + whole row + next IP From
+                FullRow = ReadRow(RowOffset, ColumnSize + FirstCol, FS)
+                IPFrom = Read32Or128Row(FullRow, 0, FirstCol)
+                IPTo = Read32Or128Row(FullRow, ColumnSize, FirstCol)
 
                 If IPNum >= IPFrom AndAlso IPNum < IPTo Then
                     Dim Is_Proxy As Integer = -1
@@ -513,13 +537,10 @@ Public NotInheritable Class IP2Proxy
                     Dim Threat As String = MSG_NOT_SUPPORTED
                     Dim Provider As String = MSG_NOT_SUPPORTED
 
-                    Dim FirstCol As Integer = 4 ' for IPv4, IP From is 4 bytes
-                    If IPType = 6 Then ' IPv6
-                        FirstCol = 16 ' 16 bytes for IPv6
-                    End If
+                    Dim RowLen = ColumnSize - FirstCol
 
-                    ' read the row here after the IP From column (remaining columns are all 4 bytes)
-                    Dim Row() As Byte = ReadRow(RowOffset + FirstCol, ColumnSize - FirstCol, FS)
+                    ReDim Row(RowLen - 1)
+                    Array.Copy(FullRow, FirstCol, Row, 0, RowLen) ' extract the actual row data
 
                     If PROXYTYPE_ENABLED Then
                         If Mode = Modes.ALL OrElse Mode = Modes.PROXY_TYPE OrElse Mode = Modes.IS_PROXY Then
@@ -669,6 +690,37 @@ Public NotInheritable Class IP2Proxy
         Return _Byte(0)
     End Function
 
+    ' Read 8 bits in header
+    Private Function Read8Header(ByRef Row() As Byte, ByVal ByteOffset As Integer) As Integer
+        Dim _Byte(0) As Byte ' 1 byte
+        Array.Copy(Row, ByteOffset, _Byte, 0, 1)
+        Return _Byte(0)
+    End Function
+
+    ' Read 32 bits in header
+    Private Function Read32Header(ByRef Row() As Byte, ByVal ByteOffset As Integer) As Integer
+        Dim _Byte(3) As Byte ' 4 bytes
+        Array.Copy(Row, ByteOffset, _Byte, 0, 4)
+        Return BitConverter.ToUInt32(_Byte, 0)
+    End Function
+
+    Private Function Read32Or128Row(ByRef Row() As Byte, ByVal ByteOffset As Integer, ByVal Len As Integer) As IntX
+        Dim _Byte(Len - 1) As Byte
+        Array.Copy(Row, ByteOffset, _Byte, 0, Len)
+        If Len = 4 Then
+            Return New IntX(BitConverter.ToUInt32(_Byte, 0).ToString())
+        ElseIf Len = 16 Then
+            Dim bigRetVal As IntX
+
+            bigRetVal = New IntX(BitConverter.ToUInt64(_Byte, 8).ToString())
+            bigRetVal *= SHIFT64BIT
+            bigRetVal += New IntX(BitConverter.ToUInt64(_Byte, 0).ToString())
+
+            Return bigRetVal
+        Else
+            Return New IntX()
+        End If
+    End Function
 
     Private Function Read32Or128(ByVal _Pos As Long, ByVal _MyIPType As Integer, ByRef MyFilestream As FileStream) As IntX
         If _MyIPType = 4 Then
@@ -712,13 +764,17 @@ Public NotInheritable Class IP2Proxy
 
     ' Read strings in the binary database
     Private Function ReadStr(ByVal _Pos As Long, ByRef Myfilestream As FileStream) As String
-        Dim _Bytes(0) As Byte
-        Dim _Bytes2() As Byte
+        Dim _Size = 256 ' max size of string field + 1 byte for the length
+        Dim _Data(_Size - 1) As Byte
+
+        Dim _Len As Byte
+        Dim _Bytes() As Byte
         Myfilestream.Seek(_Pos, SeekOrigin.Begin)
-        Myfilestream.Read(_Bytes, 0, 1)
-        ReDim _Bytes2(_Bytes(0) - 1)
-        Myfilestream.Read(_Bytes2, 0, _Bytes(0))
-        Return Encoding.Default.GetString(_Bytes2)
+        Myfilestream.Read(_Data, 0, _Size)
+        _Len = _Data(0)
+        ReDim _Bytes(_Len - 1)
+        Array.Copy(_Data, 1, _Bytes, 0, _Len)
+        Return Encoding.Default.GetString(_Bytes)
     End Function
 
     ' Description: Initialize
